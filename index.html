@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Randomizador de Salas — EEMTI Maria Luiza Saboia</title>
+<style>
+  :root{
+    --verde:#1b8a3a; --verde-esc:#136a2c; --laranja:#ef6c1a;
+    --tinta:#222; --cinza:#666; --linha:#d8d8d8; --fundo:#f4f6f4;
+    --card:#fff; --raio:14px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--tinta); background:var(--fundo); line-height:1.45;
+  }
+  header.app{
+    background:linear-gradient(135deg,var(--verde),var(--verde-esc));
+    color:#fff; padding:18px 22px; display:flex; align-items:center; gap:14px;
+  }
+  header.app .logo-mini{width:42px;height:42px;border-radius:50%;background:#fff;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto}
+  header.app .logo-mini img{width:100%;height:100%;object-fit:contain}
+  header.app h1{font-size:19px;margin:0;font-weight:700}
+  header.app p{margin:2px 0 0;font-size:12.5px;opacity:.9}
+  main{max-width:1000px;margin:0 auto;padding:22px 18px 60px}
+  .card{background:var(--card);border:1px solid var(--linha);border-radius:var(--raio);
+    padding:20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .card h2{margin:0 0 4px;font-size:16px;color:var(--verde-esc)}
+  .card .hint{margin:0 0 16px;font-size:13px;color:var(--cinza)}
+  .step{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;
+    border-radius:50%;background:var(--verde);color:#fff;font-size:13px;font-weight:700;margin-right:8px}
+  label{display:block;font-size:13px;font-weight:600;margin:0 0 5px;color:#444}
+  input[type=text],input[type=date],input[type=number],textarea{
+    width:100%;border:1px solid var(--linha);border-radius:9px;padding:10px 12px;
+    font-size:14px;font-family:inherit;background:#fcfcfc}
+  input:focus,textarea:focus{outline:2px solid rgba(27,138,58,.35);border-color:var(--verde)}
+  textarea{min-height:240px;resize:vertical;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.7}
+  .row{display:flex;gap:16px;flex-wrap:wrap}
+  .row > *{flex:1;min-width:180px}
+  .btn{display:inline-flex;align-items:center;gap:7px;border:none;border-radius:10px;
+    padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer;background:var(--laranja);color:#fff}
+  .btn:hover{filter:brightness(1.05)}
+  .btn.secund{background:#fff;color:var(--verde-esc);border:1.5px solid var(--verde)}
+  .btn.ghost{background:#eef1ee;color:#444}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .logo-area{display:flex;align-items:center;gap:16px}
+  .logo-box{width:84px;height:84px;border-radius:50%;border:2px dashed var(--linha);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fafafa;flex:0 0 auto}
+  .logo-box img{width:100%;height:100%;object-fit:contain}
+  .logo-box span{font-size:11px;color:#aaa;text-align:center;padding:6px}
+  /* prévia */
+  .grid2{display:grid;grid-template-columns:1.3fr 1fr;gap:18px}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr}}
+  .preview{border:1px solid var(--linha);border-radius:10px;padding:14px;background:#fafafa;align-self:start}
+  .preview h3{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:var(--cinza)}
+  .preview .turma-line{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--linha);font-size:14px}
+  .preview .turma-line span:first-child{font-weight:600}
+  .preview .total{display:flex;justify-content:space-between;padding-top:10px;margin-top:4px;font-weight:700}
+  .aviso{background:#fff4e5;border:1px solid #ffd9a8;color:#8a4b00;border-radius:9px;padding:10px 12px;font-size:13px;margin-top:12px}
+  .salas-ctrl{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-top:18px}
+  .salas-ctrl .nsalas{max-width:120px}
+  .sug{font-size:12.5px;color:var(--cinza)}
+  /* resultados / abas */
+  #resultado{display:none}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+  .tab{padding:8px 14px;border-radius:8px;border:1px solid var(--linha);background:#fff;cursor:pointer;font-size:13px;font-weight:600}
+  .tab.ativa{background:var(--verde);color:#fff;border-color:var(--verde)}
+  .doc-actions{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 16px}
+  /* folha A4 */
+  .sheet{background:#fff;border:1px solid var(--linha);border-radius:8px;padding:18px 20px;margin:0 auto 22px;max-width:760px}
+  .sheet-head{display:flex;align-items:center;gap:14px;border-bottom:2px solid var(--verde);padding-bottom:10px;margin-bottom:14px}
+  .sheet-head img{width:54px;height:54px;object-fit:contain;border-radius:50%;flex:0 0 auto}
+  .sheet-head .ti{flex:1}
+  .sheet-head .ti b{font-size:15px;display:block}
+  .sheet-head .ti small{font-size:12px;color:var(--cinza)}
+  .sheet-head .sala-tag{font-size:14px;font-weight:700;color:var(--laranja);white-space:nowrap}
+  /* mapa */
+  .frente{text-align:center;margin-bottom:12px}
+  .quadro{display:inline-block;min-width:60%;border:2px solid #444;border-radius:6px;padding:8px 0;font-weight:700;letter-spacing:2px;font-size:14px}
+  .mesa{margin:8px auto 0;width:150px;border:1px solid #888;border-radius:6px;padding:6px;font-size:11.5px;background:#fafafa}
+  .seta{font-size:10.5px;color:#aaa;margin-top:4px}
+  .grade{display:flex;flex-direction:column;gap:6px;align-items:center;margin-top:6px}
+  .drow{display:flex;gap:6px}
+  .seat{width:120px;height:42px;border:1px solid #999;border-radius:6px;font-size:10.5px;line-height:1.2;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+  .seat b{font-size:9.5px;font-weight:700}
+  .seat.vazio{background:#f0f0f0;color:#bbb;border-style:dashed}
+  .legenda{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;font-size:11.5px;margin-top:14px}
+  .legenda .sw{display:inline-block;width:12px;height:12px;border:1px solid #999;vertical-align:middle;margin-right:4px;border-radius:2px}
+  /* frequência */
+  table.freq{width:100%;border-collapse:collapse;font-size:12px}
+  table.freq th,table.freq td{border:1px solid #bbb;padding:4px 6px;text-align:left}
+  table.freq th{background:var(--verde);color:#fff;font-size:11px}
+  table.freq td.c{text-align:center;width:34px}
+  table.freq td.pres{width:74px}
+  table.freq td.assin{width:200px}
+  .vazio-txt{color:#bbb}
+  /* impressão */
+  #print-area{display:none}
+  @media print{
+    body{background:#fff}
+    header.app,main{display:none !important}
+    #print-area{display:block}
+    .sheet{border:none;border-radius:0;box-shadow:none;margin:0;max-width:100%;padding:0}
+    .doc-page{page-break-after:always;page-break-inside:avoid}
+    .doc-page:last-child{page-break-after:auto}
+    @page{size:A4 portrait;margin:11mm}
+    /* compacta a frequência p/ caber até 45 alunos numa folha */
+    table.freq{font-size:10px}
+    table.freq th{font-size:9.5px}
+    table.freq th,table.freq td{padding:1.5px 5px}
+    table.freq tr{page-break-inside:avoid}
+    /* mapa: garante que caiba na largura/altura */
+    .seat{flex:1 1 0;min-width:0;height:38px}
+    .drow{width:100%}
+    .grade{width:100%}
+  }
+</style>
+</head>
+<body>
+<header class="app">
+  <div class="logo-mini" id="logoMini"><span style="font-size:10px;color:#1b8a3a;font-weight:700">MLS</span></div>
+  <div>
+    <h1>Randomizador de Salas</h1>
+    <p>EEMTI Maria Luiza Saboia · funciona offline</p>
+  </div>
+</header>
+
+<main>
+  <!-- 1. Configuração -->
+  <div class="card">
+    <h2><span class="step">1</span>Configuração</h2>
+    <p class="hint">O logotipo fica salvo no navegador e aparece em todos os documentos impressos.</p>
+    <div class="logo-area">
+      <div class="logo-box" id="logoBox"><span>Sem<br>logotipo</span></div>
+      <div>
+        <label>Logotipo da escola</label>
+        <input type="file" id="logoInput" accept="image/*">
+        <button class="btn ghost" id="logoRemove" style="margin-top:8px;font-size:12.5px;padding:6px 12px">Remover</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top:18px">
+      <div>
+        <label for="avalNome">Nome da avaliação</label>
+        <input type="text" id="avalNome" placeholder="Ex.: 2ª Avaliação Bimestral">
+      </div>
+      <div>
+        <label for="avalData">Data</label>
+        <input type="date" id="avalData">
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Alunos -->
+  <div class="card">
+    <h2><span class="step">2</span>Alunos por turma</h2>
+    <p class="hint">Cole as turmas participantes. Cada turma começa com uma linha de cabeçalho (o nome da turma), seguida da lista numerada de alunos.</p>
+    <div class="grid2">
+      <div>
+        <label for="listas">Colar listas</label>
+        <textarea id="listas" placeholder="1º A&#10;1 - Maria Silva&#10;2 - João Souza&#10;3 - Ana Pereira&#10;&#10;1º B&#10;1 - Pedro Lima&#10;2 - Clara Dias"></textarea>
+      </div>
+      <div class="preview" id="preview">
+        <h3>Prévia detectada</h3>
+        <div id="previewBody"><p style="color:#aaa;font-size:13px;margin:0">Cole as listas para ver as turmas detectadas.</p></div>
+      </div>
+    </div>
+    <div class="salas-ctrl">
+      <div class="nsalas">
+        <label for="nSalas">Número de salas</label>
+        <input type="number" id="nSalas" min="1" max="8" value="1">
+      </div>
+      <div class="sug" id="sugSalas"></div>
+      <div style="flex:1"></div>
+      <button class="btn" id="btnGerar">Gerar salas ▸</button>
+    </div>
+    <div id="avisoCap"></div>
+  </div>
+
+  <!-- Resultado -->
+  <div class="card" id="resultado">
+    <h2>Salas geradas</h2>
+    <p class="hint">Clique numa sala para ver seus documentos. Use os botões para imprimir (ou salvar em PDF).</p>
+    <div style="margin-bottom:14px">
+      <button class="btn secund" id="btnRegerar">↻ Gerar novamente</button>
+      <button class="btn ghost" id="btnPrintMapas">🖨 Imprimir todos os mapas</button>
+      <button class="btn ghost" id="btnPrintFreq">🖨 Imprimir todas as frequências</button>
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div class="doc-actions" id="docActions"></div>
+    <div id="docView"></div>
+  </div>
+</main>
+
+<div id="print-area"></div>
+
+<script>
+"use strict";
+/* ============ Persistência ============ */
+const LS = {
+  logo:'rs_logo', aval:'rs_aval', data:'rs_data', listas:'rs_listas'
+};
+function save(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
+function load(k){ try{return localStorage.getItem(k);}catch(e){return null;} }
+
+/* ============ Parser ============ */
+// Linha de aluno: "N - Nome", "N. Nome", "N) Nome" ou "N Nome".
+// Qualquer outra linha não-vazia é cabeçalho de turma.
+const ALUNO_RE = /^\s*\d+\s*[-.)]\s*(.+?)\s*$/;
+const ALUNO_RE_BARE = /^\s*\d+\s+(\D.*?)\s*$/; // número + espaço + algo que não começa com dígito
+function parseListas(texto){
+  const linhas = texto.split(/\r?\n/);
+  const turmas = [];
+  let atual = null;
+  for(const raw of linhas){
+    const linha = raw.trim();
+    if(!linha) continue;
+    let m = linha.match(ALUNO_RE) || linha.match(ALUNO_RE_BARE);
+    if(m && atual){ atual.alunos.push(m[1].trim()); }
+    else {
+      // se parece aluno mas não há turma ainda, cria "Sem turma"
+      if(m && !atual){ atual={nome:'Sem turma',alunos:[]}; turmas.push(atual); atual.alunos.push(m[1].trim()); }
+      else { atual={nome:linha,alunos:[]}; turmas.push(atual); }
+    }
+  }
+  return turmas.filter(t=>t.alunos.length>0);
+}
+
+/* ============ Aleatoriedade (com semente p/ "gerar novamente") ============ */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function shuffle(arr,rng){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ============ Distribuição entre salas ============ */
+function distribuir(turmas,nSalas,rng){
+  const salas=Array.from({length:nSalas},()=>[]);
+  let offset=0;
+  // turmas em ordem aleatória para não privilegiar sempre a mesma
+  for(const t of shuffle(turmas,rng)){
+    const emb=shuffle(t.alunos.map(nome=>({nome,turma:t.nome})),rng);
+    emb.forEach((al,i)=>{ salas[(i+offset)%nSalas].push(al); });
+    offset=(offset+emb.length)%nSalas;
+  }
+  return salas;
+}
+
+/* ============ Assentos (mesma turma o mais distante possível) ============ */
+const ROWS=9, COLS=5; // 5 fileiras (largura) x 9 cadeiras (profundidade)
+function arranjar(alunos){
+  // agrupa por turma e conta restantes
+  const grupos={};
+  alunos.forEach(a=>{(grupos[a.turma]=grupos[a.turma]||[]).push(a);});
+  const rem={}; Object.keys(grupos).forEach(t=>rem[t]=grupos[t].length);
+  const grade=Array.from({length:ROWS},()=>Array(COLS).fill(null));
+  // ordem de preenchimento em serpentina (de cima p/ baixo) -> sobras ficam no fundo
+  const lugares=[];
+  for(let r=0;r<ROWS;r++){
+    const cols=r%2===0?[...Array(COLS).keys()]:[...Array(COLS).keys()].reverse();
+    for(const c of cols)lugares.push([r,c]);
+  }
+  let restantes=alunos.length;
+  for(const [r,c] of lugares){
+    if(restantes===0)break;
+    // turmas dos vizinhos ortogonais já ocupados (frente, trás, lados)
+    const vizinhos=new Set();
+    [[r-1,c],[r+1,c],[r,c-1],[r,c+1]].forEach(([nr,nc])=>{
+      if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&grade[nr][nc])vizinhos.add(grade[nr][nc].turma);
+    });
+    const cands=Object.keys(rem).filter(t=>rem[t]>0);
+    const livres=cands.filter(t=>!vizinhos.has(t));
+    const pool=(livres.length?livres:cands).sort((a,b)=>rem[b]-rem[a]); // maior restante primeiro (equilíbrio)
+    const t=pool[0];
+    grade[r][c]=grupos[t].shift(); rem[t]--; restantes--;
+  }
+  return grade;
+}
+
+/* ============ Estado ============ */
+let estado={turmas:[],salas:[],nSalas:1,coresTurma:{}};
+const PALETA=['#e3f2fd','#fce4ec','#e8f5e9','#fff3e0','#f3e5f5','#e0f7fa','#fff9c4','#efebe9'];
+function corDaTurma(nome){
+  if(!(nome in estado.coresTurma)){
+    const i=Object.keys(estado.coresTurma).length%PALETA.length;
+    estado.coresTurma[nome]=PALETA[i];
+  }
+  return estado.coresTurma[nome];
+}
+
+/* ============ Elementos ============ */
+const $=id=>document.getElementById(id);
+const listasEl=$('listas'), previewBody=$('previewBody'), nSalasEl=$('nSalas'),
+      sugSalasEl=$('sugSalas'), avisoCapEl=$('avisoCap'), resultado=$('resultado');
+let salasManual=false; // usuário mexeu no nº de salas?
+
+/* ============ Logotipo ============ */
+function aplicarLogo(dataUrl){
+  const box=$('logoBox'), mini=$('logoMini');
+  if(dataUrl){
+    box.innerHTML='<img src="'+dataUrl+'" alt="logo">';
+    mini.innerHTML='<img src="'+dataUrl+'" alt="logo">';
+  } else {
+    box.innerHTML='<span>Sem<br>logotipo</span>';
+    mini.innerHTML='<span style="font-size:10px;color:#1b8a3a;font-weight:700">MLS</span>';
+  }
+}
+$('logoInput').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{ save(LS.logo,r.result); aplicarLogo(r.result); };
+  r.readAsDataURL(f);
+});
+$('logoRemove').addEventListener('click',()=>{ localStorage.removeItem(LS.logo); aplicarLogo(null); $('logoInput').value=''; });
+
+/* ============ Prévia ============ */
+function atualizarPreview(){
+  const turmas=parseListas(listasEl.value);
+  estado.turmas=turmas;
+  const total=turmas.reduce((s,t)=>s+t.alunos.length,0);
+  if(turmas.length===0){
+    previewBody.innerHTML='<p style="color:#aaa;font-size:13px;margin:0">Cole as listas para ver as turmas detectadas.</p>';
+  } else {
+    previewBody.innerHTML=turmas.map(t=>
+      '<div class="turma-line"><span>'+escapar(t.nome)+'</span><span>'+t.alunos.length+(t.alunos.length===1?' aluno':' alunos')+'</span></div>'
+    ).join('')+'<div class="total"><span>Total</span><span>'+turmas.length+(turmas.length===1?' turma · ':' turmas · ')+total+' alunos</span></div>';
+  }
+  // sugestão de salas
+  const sug=Math.min(8,Math.max(1,Math.ceil(total/45)||1));
+  if(total>0){ sugSalasEl.textContent='Sugestão: '+sug+(sug===1?' sala':' salas')+' (para até 45 por sala).'; }
+  else { sugSalasEl.textContent=''; }
+  if(!salasManual && total>0){ nSalasEl.value=sug; }
+  verificarCapacidade();
+}
+function verificarCapacidade(){
+  const total=estado.turmas.reduce((s,t)=>s+t.alunos.length,0);
+  const n=parseInt(nSalasEl.value)||1;
+  const maxSala=Math.ceil(total/n);
+  if(maxSala>45 && total>0){
+    avisoCapEl.innerHTML='<div class="aviso">⚠ Com '+n+' sala(s), uma sala teria até '+maxSala+' alunos, acima dos 45 lugares. Aumente o número de salas.</div>';
+    return false;
+  }
+  avisoCapEl.innerHTML='';
+  return true;
+}
+function escapar(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+listasEl.addEventListener('input',()=>{ save(LS.listas,listasEl.value); atualizarPreview(); });
+nSalasEl.addEventListener('input',()=>{ salasManual=true; verificarCapacidade(); });
+$('avalNome').addEventListener('input',e=>save(LS.aval,e.target.value));
+$('avalData').addEventListener('input',e=>save(LS.data,e.target.value));
+
+/* ============ Gerar ============ */
+function gerar(novaSemente){
+  if(estado.turmas.length===0){ alert('Cole pelo menos uma turma com alunos.'); return; }
+  if(!verificarCapacidade()){ return; }
+  const n=Math.min(8,Math.max(1,parseInt(nSalasEl.value)||1));
+  estado.nSalas=n;
+  const semente=novaSemente?(Date.now()^Math.floor(Math.random()*1e9)):0xC0FFEE;
+  const rng=mulberry32(semente);
+  estado.coresTurma={};
+  estado.turmas.forEach(t=>corDaTurma(t.nome)); // fixa cores na ordem das turmas
+  estado.salas=distribuir(estado.turmas,n,rng).map(arranjar);
+  renderResultado();
+  resultado.style.display='block';
+  resultado.scrollIntoView({behavior:'smooth'});
+}
+$('btnGerar').addEventListener('click',()=>gerar(true));
+$('btnRegerar').addEventListener('click',()=>gerar(true));
+
+/* ============ Render dos documentos ============ */
+function cabecalho(salaIdx){
+  const logo=load(LS.logo);
+  const aval=$('avalNome').value||'Avaliação';
+  const data=formatarData($('avalData').value);
+  return '<div class="sheet-head">'+
+    (logo?'<img src="'+logo+'">':'')+
+    '<div class="ti"><b>EEMTI Maria Luiza Saboia</b><small>'+escapar(aval)+(data?' · '+data:'')+'</small></div>'+
+    '<div class="sala-tag">Sala '+(salaIdx+1)+'</div></div>';
+}
+function formatarData(iso){
+  if(!iso)return'';
+  const [a,m,d]=iso.split('-'); return d+'/'+m+'/'+a;
+}
+function contarSala(grade){let c=0;grade.forEach(r=>r.forEach(s=>{if(s)c++;}));return c;}
+
+function renderMapa(grade,salaIdx){
+  let html='<div class="sheet doc-page">'+cabecalho(salaIdx);
+  html+='<div class="frente"><div class="quadro">QUADRO</div><div class="mesa">Mesa do professor</div><div class="seta">▲ frente da sala ▲</div></div>';
+  html+='<div class="grade">';
+  for(let r=0;r<ROWS;r++){
+    html+='<div class="drow">';
+    for(let c=0;c<COLS;c++){
+      const s=grade[r][c];
+      if(s){ html+='<div class="seat" style="background:'+corDaTurma(s.turma)+'">'+escapar(s.nome)+'<b>'+escapar(s.turma)+'</b></div>'; }
+      else { html+='<div class="seat vazio">vazio</div>'; }
+    }
+    html+='</div>';
+  }
+  html+='</div><div class="seta" style="text-align:center">▼ fundo da sala ▼</div>';
+  // legenda
+  const turmasUsadas=[...new Set([].concat(...grade).filter(Boolean).map(s=>s.turma))];
+  html+='<div class="legenda">'+turmasUsadas.map(t=>'<span><span class="sw" style="background:'+corDaTurma(t)+'"></span>'+escapar(t)+'</span>').join('')+'</div>';
+  html+='</div>';
+  return html;
+}
+function renderFreq(grade,salaIdx){
+  // lista de alunos da sala, ordenada por nome
+  const alunos=[].concat(...grade).filter(Boolean).slice().sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));
+  let html='<div class="sheet doc-page">'+cabecalho(salaIdx);
+  html+='<table class="freq"><thead><tr><th class="c">Nº</th><th>Nome do aluno</th><th>Turma</th><th>Presença</th><th>Assinatura</th></tr></thead><tbody>';
+  alunos.forEach((a,i)=>{
+    html+='<tr><td class="c">'+(i+1)+'</td><td>'+escapar(a.nome)+'</td><td>'+escapar(a.turma)+'</td><td class="pres">( ) P&nbsp;&nbsp;( ) F</td><td class="assin"></td></tr>';
+  });
+  html+='</tbody></table>';
+  html+='<p style="font-size:11px;color:#666;margin-top:10px">Total de alunos na sala: '+alunos.length+'</p>';
+  html+='</div>';
+  return html;
+}
+
+let abaAtiva=0;
+function renderResultado(){
+  const tabs=$('tabs'); tabs.innerHTML='';
+  estado.salas.forEach((g,i)=>{
+    const b=document.createElement('button');
+    b.className='tab'+(i===abaAtiva?' ativa':'');
+    b.textContent='Sala '+(i+1)+' ('+contarSala(g)+')';
+    b.onclick=()=>{abaAtiva=i;renderResultado();};
+    tabs.appendChild(b);
+  });
+  if(abaAtiva>=estado.salas.length)abaAtiva=0;
+  const g=estado.salas[abaAtiva];
+  $('docActions').innerHTML=
+    '<button class="btn secund" onclick="imprimir(\'mapa\','+abaAtiva+')">🖨 Imprimir mapa</button>'+
+    '<button class="btn secund" onclick="imprimir(\'freq\','+abaAtiva+')">🖨 Imprimir frequência</button>';
+  $('docView').innerHTML=renderMapa(g,abaAtiva)+renderFreq(g,abaAtiva);
+}
+
+/* ============ Impressão ============ */
+function imprimir(tipo,idx){
+  const g=estado.salas[idx];
+  const html=tipo==='mapa'?renderMapa(g,idx):renderFreq(g,idx);
+  imprimirHTML(html);
+}
+function imprimirVarios(tipo){
+  let html='';
+  estado.salas.forEach((g,i)=>{ html+= tipo==='mapa'?renderMapa(g,i):renderFreq(g,i); });
+  imprimirHTML(html);
+}
+function imprimirHTML(html){
+  const pa=$('print-area'); pa.innerHTML=html; window.print();
+  setTimeout(()=>{pa.innerHTML='';},500);
+}
+window.imprimir=imprimir;
+$('btnPrintMapas').addEventListener('click',()=>imprimirVarios('mapa'));
+$('btnPrintFreq').addEventListener('click',()=>imprimirVarios('freq'));
+
+/* ============ Inicialização ============ */
+(function init(){
+  const logo=load(LS.logo); if(logo)aplicarLogo(logo);
+  const aval=load(LS.aval); if(aval)$('avalNome').value=aval;
+  const dataSalva=load(LS.data);
+  $('avalData').value=dataSalva||new Date().toISOString().slice(0,10);
+  const listas=load(LS.listas); if(listas)listasEl.value=listas;
+  atualizarPreview();
+})();
+</script>
+</body>
+</html>
