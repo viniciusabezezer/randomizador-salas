@@ -83,6 +83,8 @@
   .seta{font-size:10.5px;color:#aaa;margin-top:4px}
   .grade{display:flex;flex-direction:column;gap:6px;align-items:center;margin-top:6px}
   .drow{display:flex;gap:6px}
+  /* força a impressão das cores de fundo (turmas, legenda, cabeçalho da tabela) */
+  .seat,.seat.vazio,.legenda .sw,table.freq th{-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact}
   .seat{width:120px;height:42px;border:1px solid #999;border-radius:6px;font-size:10.5px;line-height:1.2;
     display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden}
   .seat b{font-size:9.5px;font-weight:700}
@@ -381,9 +383,10 @@ function contarSala(grade){let c=0;grade.forEach(r=>r.forEach(s=>{if(s)c++;}));r
 
 function renderMapa(grade,salaIdx){
   let html='<div class="sheet doc-page">'+cabecalho(salaIdx);
-  html+='<div class="frente"><div class="quadro">QUADRO</div><div class="mesa">Mesa do professor</div><div class="seta">▲ frente da sala ▲</div></div>';
+  // quadro/mesa ficam embaixo: desenha do fundo (topo) para a frente (baixo)
+  html+='<div class="seta" style="text-align:center;margin-bottom:4px">▲ fundo da sala ▲</div>';
   html+='<div class="grade">';
-  for(let r=0;r<ROWS;r++){
+  for(let r=ROWS-1;r>=0;r--){
     html+='<div class="drow">';
     for(let c=0;c<COLS;c++){
       const s=grade[r][c];
@@ -392,7 +395,8 @@ function renderMapa(grade,salaIdx){
     }
     html+='</div>';
   }
-  html+='</div><div class="seta" style="text-align:center">▼ fundo da sala ▼</div>';
+  html+='</div>';
+  html+='<div class="frente"><div class="seta" style="margin-bottom:6px">▼ frente da sala ▼</div><div class="mesa">Mesa do professor</div><div class="quadro" style="margin-top:8px">QUADRO</div></div>';
   // legenda
   const turmasUsadas=[...new Set([].concat(...grade).filter(Boolean).map(s=>s.turma))];
   html+='<div class="legenda">'+turmasUsadas.map(t=>'<span><span class="sw" style="background:'+corDaTurma(t)+'"></span>'+escapar(t)+'</span>').join('')+'</div>';
