@@ -1,0 +1,36 @@
+==============================================
+  RANDOMIZADOR DE SALAS - EEMTI Maria Luiza Saboia
+==============================================
+
+O QUE É
+-------
+Aplicativo que distribui alunos de várias turmas em salas de avaliação,
+deixando colegas da mesma turma o mais longe possível. Gera, por sala:
+mapa ilustrado, lista de frequência e tabela de provas (equipe de apoio).
+Funciona 100% OFFLINE - sem internet, sem instalar nada, sem conta.
+
+COMO USAR (rápido)
+------------------
+1. Dê DUPLO CLIQUE em "Randomizador de Salas.html" (abre no navegador).
+2. Digite o nome da avaliação e confira a data.
+3. Cole as turmas no campo grande:
+   - Nome da turma numa linha, depois a lista de alunos (numerada ou não).
+   - Separe uma turma da outra com UMA LINHA EM BRANCO.
+4. Escolha o número de salas (1 a 8) e, se quiser, nomeie cada sala.
+5. Clique em "Gerar salas".
+6. Clique em cada sala e use os botões de impressão (ou "Salvar como PDF").
+
+DICAS
+-----
+- Para impressão perfeita (mapa em paisagem e colorido), use Chrome ou Edge.
+- O mapa não traz data (é reaproveitável); a data fica na frequência.
+- A lista de frequência pode ter data própria - dá para reusar o mesmo
+  mapa em outra prova/dia, mudando só a data da lista.
+- Os dados ficam salvos no navegador usado; abra sempre no mesmo
+  computador para manter o histórico.
+
+GUIA COMPLETO
+-------------
+Abra "Guia de Uso.html" (duplo clique) para um passo a passo ilustrado.
+
+==============================================

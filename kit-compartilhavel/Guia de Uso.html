@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia de Uso — Randomizador de Salas</title>
+<style>
+  :root{--verde:#1b8a3a;--verde-esc:#136a2c;--laranja:#ef6c1a;--tinta:#222;--cinza:#666;--linha:#e0e0e0;--fundo:#f4f6f4}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--tinta);background:var(--fundo);line-height:1.6}
+  header{background:linear-gradient(135deg,var(--verde),var(--verde-esc));color:#fff;padding:26px 22px;text-align:center}
+  header h1{margin:0;font-size:23px}
+  header p{margin:6px 0 0;opacity:.9;font-size:14px}
+  main{max-width:760px;margin:0 auto;padding:24px 18px 60px}
+  .card{background:#fff;border:1px solid var(--linha);border-radius:14px;padding:22px 24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  h2{color:var(--verde-esc);font-size:18px;margin:0 0 12px;display:flex;align-items:center;gap:10px}
+  h2 .n{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--laranja);color:#fff;font-size:15px;flex:0 0 auto}
+  ol,ul{margin:8px 0;padding-left:22px}
+  li{margin:7px 0}
+  .destaque{background:#fff7ef;border:1px solid #ffd9b8;border-radius:10px;padding:12px 16px;margin:14px 0;font-size:14.5px}
+  .destaque b{color:var(--laranja)}
+  code{background:#eef1ee;padding:2px 7px;border-radius:5px;font-size:13px}
+  .passo-ex{background:#f7faf7;border-left:4px solid var(--verde);padding:10px 14px;margin:10px 0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;white-space:pre-line;border-radius:0 8px 8px 0}
+  .dica{font-size:14px;color:var(--cinza)}
+  footer{text-align:center;font-size:12.5px;color:var(--cinza);padding:10px}
+</style>
+</head>
+<body>
+<header>
+  <h1>📋 Randomizador de Salas</h1>
+  <p>EEMTI Maria Luiza Saboia · Guia rápido de uso</p>
+</header>
+<main>
+
+  <div class="card">
+    <h2>O que é</h2>
+    <p>Um aplicativo que <b>distribui os alunos de várias turmas em salas de avaliação</b>, embaralhando-os de forma que colegas da mesma turma fiquem o mais distante possível um do outro. Ele gera, para cada sala:</p>
+    <ul>
+      <li><b>Mapa ilustrado da sala</b> (5 fileiras × 9 cadeiras, com quadro e mesa do professor);</li>
+      <li><b>Lista de frequência</b> (com presença e assinatura);</li>
+      <li><b>Tabela de provas</b> para a equipe de apoio (quantas provas de cada série separar por sala).</li>
+    </ul>
+    <div class="destaque">✅ Funciona <b>100% offline</b>: não precisa de internet, nem instalar nada, nem criar conta.</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">1</span>Como abrir</h2>
+    <p>Dê <b>duplo clique</b> no arquivo <code>Randomizador de Salas.html</code>. Ele abre no seu navegador (Chrome, Edge, Firefox…).</p>
+    <p class="dica">💡 Para a impressão sair certinha (mapa em paisagem e com cores), recomendamos o <b>Google Chrome</b> ou o <b>Microsoft Edge</b>.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">2</span>Preencher os dados</h2>
+    <ol>
+      <li>Digite o <b>Nome da avaliação</b> (ex.: "2ª Avaliação Bimestral").</li>
+      <li>Se quiser, ajuste a <b>data</b> (já vem com a data de hoje).</li>
+      <li>A <b>lista de frequência</b> pode ter avaliação e data próprias — útil para reaproveitar o mesmo mapa em outra prova/dia (deixe em branco para usar os dados acima).</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">3</span>Colar as turmas</h2>
+    <p>No campo grande, cole as turmas participantes. Cada turma começa com <b>o nome dela numa linha</b>, seguida da lista de alunos — <b>numerada ou não</b>. Separe uma turma da outra com <b>uma linha em branco</b>:</p>
+    <div class="passo-ex">1º A
+1 - Maria Silva
+2 - João Souza
+
+1º B
+Pedro Lima
+Clara Dias</div>
+    <p class="dica">A "Prévia detectada" ao lado mostra as turmas e a contagem de alunos — confira antes de gerar.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">4</span>Escolher salas e gerar</h2>
+    <ol>
+      <li>Defina o <b>número de salas</b> (de 1 a 8). O app sugere um número, mas você pode mudar.</li>
+      <li>Opcional: dê um <b>nome a cada sala</b> (ex.: "Sala 12", "Laboratório").</li>
+      <li>Clique em <b>Gerar salas</b>. Para um novo sorteio, use <b>Gerar novamente</b>.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2><span class="n">5</span>Imprimir</h2>
+    <p>Clique em cada sala para ver seus documentos. Use os botões de impressão:</p>
+    <ul>
+      <li><b>Imprimir mapa</b> / <b>Imprimir todos os mapas</b> (saem em paisagem, preenchendo a folha);</li>
+      <li><b>Imprimir frequência</b> / <b>Imprimir todas as frequências</b>;</li>
+      <li><b>Imprimir tabela de provas</b> (a folha única para a equipe de apoio).</li>
+    </ul>
+    <p class="dica">Na janela de impressão você pode escolher uma impressora ou <b>"Salvar como PDF"</b>.</p>
+  </div>
+
+  <div class="card">
+    <h2>Bom saber</h2>
+    <ul>
+      <li>O <b>mapa não tem data</b> de propósito: ele é reaproveitável. A data fica só na lista de frequência e na tabela de provas.</li>
+      <li>Os dados (listas, nomes de salas, último arranjo) ficam <b>salvos no navegador</b> usado. Para manter o histórico, abra sempre no mesmo computador/navegador.</li>
+      <li>O arquivo é <b>autossuficiente</b>: leva o logotipo da escola embutido e não depende de mais nada.</li>
+    </ul>
+  </div>
+
+</main>
+<footer>Randomizador de Salas — uso interno da EEMTI Maria Luiza Saboia</footer>
+</body>
+</html>
