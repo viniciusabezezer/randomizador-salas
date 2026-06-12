@@ -169,7 +169,7 @@
         <input type="text" id="avalNome" placeholder="Ex.: 2ª Avaliação Bimestral">
       </div>
       <div>
-        <label for="avalData">Data <span style="font-weight:400;color:var(--cinza)">(usada no mapa)</span></label>
+        <label for="avalData">Data <span style="font-weight:400;color:var(--cinza)">(tabela de provas; padrão da frequência — não sai no mapa)</span></label>
         <input type="date" id="avalData">
       </div>
     </div>
@@ -438,9 +438,9 @@ function cabecalho(salaIdx,tipo){
   if(tipo==='freq'){ // a frequência pode ter avaliação/data próprias
     aval=($('freqNome').value.trim()||$('avalNome').value)||'Avaliação';
     dataIso=$('freqData').value||$('avalData').value;
-  } else {
+  } else { // mapa: sem data (o mapa é reaproveitável)
     aval=$('avalNome').value||'Avaliação';
-    dataIso=$('avalData').value;
+    dataIso='';
   }
   const data=formatarData(dataIso);
   const tag=escapar(estado.nomesSalas[salaIdx]||('Sala '+(salaIdx+1)));
