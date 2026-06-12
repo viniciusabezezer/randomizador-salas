@@ -156,7 +156,7 @@
   <!-- 2. Alunos -->
   <div class="card">
     <h2><span class="step">2</span>Alunos por turma</h2>
-    <p class="hint">Cole as turmas participantes. Cada turma começa com uma linha de cabeçalho (o nome da turma), seguida da lista numerada de alunos.</p>
+    <p class="hint">Cole as turmas participantes. Cada turma começa com o nome da turma numa linha, seguido da lista de alunos — <b>numerada ou não</b>. Separe uma turma da outra com <b>uma linha em branco</b>.</p>
     <div class="grid2">
       <div>
         <label for="listas">Colar listas</label>
@@ -208,23 +208,31 @@ function save(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
 function load(k){ try{return localStorage.getItem(k);}catch(e){return null;} }
 
 /* ============ Parser ============ */
-// Linha de aluno: "N - Nome", "N. Nome", "N) Nome" ou "N Nome".
-// Qualquer outra linha não-vazia é cabeçalho de turma.
+// Linha de aluno numerado: "N - Nome", "N. Nome", "N) Nome" ou "N Nome".
 const ALUNO_RE = /^\s*\d+\s*[-.)]\s*(.+?)\s*$/;
 const ALUNO_RE_BARE = /^\s*\d+\s+(\D.*?)\s*$/; // número + espaço + algo que não começa com dígito
+// Aceita listas numeradas OU não:
+//  - linha numerada  -> sempre um aluno
+//  - linha em branco  -> separa turmas (a próxima linha de texto é um cabeçalho)
+//  - linha de texto   -> cabeçalho de turma se: é a 1ª, ou veio após linha em branco,
+//                        ou o bloco atual estava numerado; senão, é um aluno sem número.
 function parseListas(texto){
   const linhas = texto.split(/\r?\n/);
   const turmas = [];
-  let atual = null;
+  let atual = null, esperaCabecalho = false, ultimoNumerado = false;
   for(const raw of linhas){
     const linha = raw.trim();
-    if(!linha) continue;
-    let m = linha.match(ALUNO_RE) || linha.match(ALUNO_RE_BARE);
-    if(m && atual){ atual.alunos.push(m[1].trim()); }
-    else {
-      // se parece aluno mas não há turma ainda, cria "Sem turma"
-      if(m && !atual){ atual={nome:'Sem turma',alunos:[]}; turmas.push(atual); atual.alunos.push(m[1].trim()); }
-      else { atual={nome:linha,alunos:[]}; turmas.push(atual); }
+    if(linha===''){ esperaCabecalho = true; continue; }
+    const m = linha.match(ALUNO_RE) || linha.match(ALUNO_RE_BARE);
+    if(m){
+      if(!atual){ atual={nome:'Sem turma',alunos:[]}; turmas.push(atual); }
+      atual.alunos.push(m[1].trim());
+      ultimoNumerado = true; esperaCabecalho = false;
+    } else {
+      const ehCabecalho = !atual || esperaCabecalho || (atual.alunos.length>0 && ultimoNumerado);
+      if(ehCabecalho){ atual={nome:linha,alunos:[]}; turmas.push(atual); }
+      else { atual.alunos.push(linha); }
+      ultimoNumerado = false; esperaCabecalho = false;
     }
   }
   return turmas.filter(t=>t.alunos.length>0);
