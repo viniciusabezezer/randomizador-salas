@@ -3,104 +3,80 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guia de Uso — Randomizador de Salas</title>
+<title>Guia rápido — Randomizador de Salas</title>
 <style>
-  :root{--verde:#1b8a3a;--verde-esc:#136a2c;--laranja:#ef6c1a;--tinta:#222;--cinza:#666;--linha:#e0e0e0;--fundo:#f4f6f4}
+  :root{--verde:#1b8a3a;--verde-esc:#136a2c;--laranja:#ef6c1a;--tinta:#222;--cinza:#666;--linha:#e6e6e6}
   *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--tinta);background:var(--fundo);line-height:1.6}
-  header{background:linear-gradient(135deg,var(--verde),var(--verde-esc));color:#fff;padding:26px 22px;text-align:center}
-  header h1{margin:0;font-size:23px}
-  header p{margin:6px 0 0;opacity:.9;font-size:14px}
-  main{max-width:760px;margin:0 auto;padding:24px 18px 60px}
-  .card{background:#fff;border:1px solid var(--linha);border-radius:14px;padding:22px 24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-  h2{color:var(--verde-esc);font-size:18px;margin:0 0 12px;display:flex;align-items:center;gap:10px}
-  h2 .n{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--laranja);color:#fff;font-size:15px;flex:0 0 auto}
-  ol,ul{margin:8px 0;padding-left:22px}
-  li{margin:7px 0}
-  .destaque{background:#fff7ef;border:1px solid #ffd9b8;border-radius:10px;padding:12px 16px;margin:14px 0;font-size:14.5px}
-  .destaque b{color:var(--laranja)}
-  code{background:#eef1ee;padding:2px 7px;border-radius:5px;font-size:13px}
-  .passo-ex{background:#f7faf7;border-left:4px solid var(--verde);padding:10px 14px;margin:10px 0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;white-space:pre-line;border-radius:0 8px 8px 0}
-  .dica{font-size:14px;color:var(--cinza)}
-  footer{text-align:center;font-size:12.5px;color:var(--cinza);padding:10px}
+  body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--tinta);
+    background:#eef1ee;line-height:1.45;display:flex;justify-content:center;padding:22px 14px}
+  .card{background:#fff;border-radius:16px;overflow:hidden;max-width:840px;width:100%;
+    box-shadow:0 6px 24px rgba(0,0,0,.10);border:1px solid var(--linha)}
+  .top{background:linear-gradient(135deg,var(--verde),var(--verde-esc));color:#fff;padding:18px 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .top h1{margin:0;font-size:20px}
+  .top p{margin:3px 0 0;font-size:12.5px;opacity:.9}
+  .top .badge{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.5);
+    border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+  .body{padding:20px 24px}
+  .lead{font-size:13.5px;color:#444;margin:0 0 16px}
+  .lead b{color:var(--verde-esc)}
+  .passos{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:620px){.passos{grid-template-columns:1fr}}
+  .passo{display:flex;gap:11px;align-items:flex-start;background:#f8faf8;border:1px solid var(--linha);
+    border-radius:11px;padding:11px 13px}
+  .passo .n{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--laranja);color:#fff;
+    font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+  .passo h3{margin:0 0 2px;font-size:14px;color:var(--verde-esc)}
+  .passo p{margin:0;font-size:12.5px;color:#555}
+  .passo code{background:#e9ede9;padding:1px 5px;border-radius:4px;font-size:11.5px}
+  .ex{grid-column:1/-1;background:#f7fbf7;border-left:4px solid var(--verde);border-radius:0 9px 9px 0;
+    padding:9px 13px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+  .ex .lbl{font-size:12px;font-weight:700;color:var(--verde-esc)}
+  .ex pre{margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:#333;white-space:pre-line}
+  .tips{margin-top:16px;border-top:1px dashed var(--linha);padding-top:14px}
+  .tips h2{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--cinza)}
+  .tips ul{margin:0;padding-left:18px}
+  .tips li{font-size:12.5px;margin:4px 0;color:#444}
+  .tips b{color:var(--laranja)}
+  .foot{background:#fafafa;border-top:1px solid var(--linha);padding:10px 24px;font-size:11.5px;color:var(--cinza);text-align:center}
+  @media print{body{background:#fff;padding:0}.card{box-shadow:none;border:none;max-width:100%}@page{size:A4 portrait;margin:10mm}}
 </style>
 </head>
 <body>
-<header>
-  <h1>📋 Randomizador de Salas</h1>
-  <p>EEMTI Maria Luiza Saboia · Guia rápido de uso</p>
-</header>
-<main>
-
-  <div class="card">
-    <h2>O que é</h2>
-    <p>Um aplicativo que <b>distribui os alunos de várias turmas em salas de avaliação</b>, embaralhando-os de forma que colegas da mesma turma fiquem o mais distante possível um do outro. Ele gera, para cada sala:</p>
-    <ul>
-      <li><b>Mapa ilustrado da sala</b> (5 fileiras × 9 cadeiras, com quadro e mesa do professor);</li>
-      <li><b>Lista de frequência</b> (com presença e assinatura);</li>
-      <li><b>Tabela de provas</b> para a equipe de apoio (quantas provas de cada série separar por sala).</li>
-    </ul>
-    <div class="destaque">✅ Funciona <b>100% offline</b>: não precisa de internet, nem instalar nada, nem criar conta.</div>
+<div class="card">
+  <div class="top">
+    <div>
+      <h1>📋 Randomizador de Salas</h1>
+      <p>EEMTI Maria Luiza Saboia · guia rápido</p>
+    </div>
+    <div class="badge">100% offline</div>
   </div>
-
-  <div class="card">
-    <h2><span class="n">1</span>Como abrir</h2>
-    <p>Dê <b>duplo clique</b> no arquivo <code>Randomizador de Salas.html</code>. Ele abre no seu navegador (Chrome, Edge, Firefox…).</p>
-    <p class="dica">💡 Para a impressão sair certinha (mapa em paisagem e com cores), recomendamos o <b>Google Chrome</b> ou o <b>Microsoft Edge</b>.</p>
-  </div>
-
-  <div class="card">
-    <h2><span class="n">2</span>Preencher os dados</h2>
-    <ol>
-      <li>Digite o <b>Nome da avaliação</b> (ex.: "2ª Avaliação Bimestral").</li>
-      <li>Se quiser, ajuste a <b>data</b> (já vem com a data de hoje).</li>
-      <li>A <b>lista de frequência</b> pode ter avaliação e data próprias — útil para reaproveitar o mesmo mapa em outra prova/dia (deixe em branco para usar os dados acima).</li>
-    </ol>
-  </div>
-
-  <div class="card">
-    <h2><span class="n">3</span>Colar as turmas</h2>
-    <p>No campo grande, cole as turmas participantes. Cada turma começa com <b>o nome dela numa linha</b>, seguida da lista de alunos — <b>numerada ou não</b>. Separe uma turma da outra com <b>uma linha em branco</b>:</p>
-    <div class="passo-ex">1º A
+  <div class="body">
+    <p class="lead">Distribui os alunos de várias turmas em salas de avaliação, deixando colegas da mesma turma <b>o mais longe possível</b>. Gera, por sala: <b>mapa ilustrado</b>, <b>lista de frequência</b> e <b>tabela de provas</b> (equipe de apoio). Sem internet, sem instalar, sem conta.</p>
+    <div class="passos">
+      <div class="passo"><div class="n">1</div><div><h3>Abrir</h3><p>Duplo clique em <code>Randomizador de Salas.html</code> — abre no navegador. Para impressão, prefira <b>Chrome</b> ou <b>Edge</b>.</p></div></div>
+      <div class="passo"><div class="n">2</div><div><h3>Dados</h3><p>Nome da avaliação e data. A frequência pode ter data própria (reaproveita o mapa).</p></div></div>
+      <div class="ex"><span class="lbl">Como colar as turmas →</span><pre>1º A
 1 - Maria Silva
 2 - João Souza
 
 1º B
-Pedro Lima
-Clara Dias</div>
-    <p class="dica">A "Prévia detectada" ao lado mostra as turmas e a contagem de alunos — confira antes de gerar.</p>
+Pedro Lima</pre><span style="font-size:11.5px;color:#666">Nome da turma, depois alunos (numerados ou não). <b>Linha em branco</b> separa as turmas.</span></div>
+      <div class="passo"><div class="n">3</div><div><h3>Colar turmas</h3><p>No campo grande. A "prévia detectada" mostra as turmas e a contagem — confira.</p></div></div>
+      <div class="passo"><div class="n">4</div><div><h3>Salas</h3><p>Escolha o número (1–8) e, se quiser, nomeie cada sala. Clique em <b>Gerar salas</b>.</p></div></div>
+      <div class="passo"><div class="n">5</div><div><h3>Conferir</h3><p>Clique numa sala para ver o mapa e a frequência. Use <b>Gerar novamente</b> para outro sorteio.</p></div></div>
+      <div class="passo"><div class="n">6</div><div><h3>Imprimir</h3><p>Botões de mapa, frequência e tabela de provas. Dá para <b>salvar em PDF</b>.</p></div></div>
+    </div>
+    <div class="tips">
+      <h2>Bom saber</h2>
+      <ul>
+        <li>O <b>mapa não tem data</b> (é reaproveitável); a data fica na frequência e na tabela de provas.</li>
+        <li>Os dados (listas, nomes, último arranjo) ficam <b>salvos no navegador</b> usado — abra sempre no mesmo computador.</li>
+        <li>O arquivo é <b>autossuficiente</b>: leva o logotipo embutido e não depende de mais nada.</li>
+      </ul>
+    </div>
   </div>
-
-  <div class="card">
-    <h2><span class="n">4</span>Escolher salas e gerar</h2>
-    <ol>
-      <li>Defina o <b>número de salas</b> (de 1 a 8). O app sugere um número, mas você pode mudar.</li>
-      <li>Opcional: dê um <b>nome a cada sala</b> (ex.: "Sala 12", "Laboratório").</li>
-      <li>Clique em <b>Gerar salas</b>. Para um novo sorteio, use <b>Gerar novamente</b>.</li>
-    </ol>
-  </div>
-
-  <div class="card">
-    <h2><span class="n">5</span>Imprimir</h2>
-    <p>Clique em cada sala para ver seus documentos. Use os botões de impressão:</p>
-    <ul>
-      <li><b>Imprimir mapa</b> / <b>Imprimir todos os mapas</b> (saem em paisagem, preenchendo a folha);</li>
-      <li><b>Imprimir frequência</b> / <b>Imprimir todas as frequências</b>;</li>
-      <li><b>Imprimir tabela de provas</b> (a folha única para a equipe de apoio).</li>
-    </ul>
-    <p class="dica">Na janela de impressão você pode escolher uma impressora ou <b>"Salvar como PDF"</b>.</p>
-  </div>
-
-  <div class="card">
-    <h2>Bom saber</h2>
-    <ul>
-      <li>O <b>mapa não tem data</b> de propósito: ele é reaproveitável. A data fica só na lista de frequência e na tabela de provas.</li>
-      <li>Os dados (listas, nomes de salas, último arranjo) ficam <b>salvos no navegador</b> usado. Para manter o histórico, abra sempre no mesmo computador/navegador.</li>
-      <li>O arquivo é <b>autossuficiente</b>: leva o logotipo da escola embutido e não depende de mais nada.</li>
-    </ul>
-  </div>
-
-</main>
-<footer>Randomizador de Salas — uso interno da EEMTI Maria Luiza Saboia</footer>
+  <div class="foot">Randomizador de Salas — uso interno da EEMTI Maria Luiza Saboia</div>
+</div>
 </body>
 </html>
