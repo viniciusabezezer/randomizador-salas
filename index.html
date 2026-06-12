@@ -112,16 +112,25 @@
     .sheet{border:none;border-radius:0;box-shadow:none;margin:0;max-width:100%;padding:0}
     .doc-page{page-break-after:always;page-break-inside:avoid}
     .doc-page:last-child{page-break-after:auto}
+    /* frequência: A4 retrato; mapa: A4 paisagem */
     @page{size:A4 portrait;margin:11mm}
+    @page paisagem{size:A4 landscape;margin:10mm}
+    .doc-mapa{page:paisagem}
     /* compacta a frequência p/ caber até 45 alunos numa folha */
     table.freq{font-size:10px}
     table.freq th{font-size:9.5px}
     table.freq th,table.freq td{padding:1.5px 5px}
     table.freq tr{page-break-inside:avoid}
-    /* mapa: garante que caiba na largura/altura */
-    .seat{flex:1 1 0;min-width:0;height:38px}
-    .drow{width:100%}
-    .grade{width:100%}
+    /* mapa em paisagem: cadeiras grandes, preenchendo a folha */
+    .doc-mapa.sheet{max-width:100%}
+    .doc-mapa .grade{width:100%;gap:9px;margin-top:10px}
+    .doc-mapa .drow{width:100%;gap:11px}
+    .doc-mapa .seat{flex:1 1 0;min-width:0;height:42px;font-size:13px}
+    .doc-mapa .seat b{font-size:12px}
+    .doc-mapa .quadro{font-size:18px;padding:12px 0;min-width:50%}
+    .doc-mapa .mesa{font-size:13px}
+    .doc-mapa .frente{margin-top:14px}
+    .doc-mapa .legenda{font-size:13px;margin-top:10px}
   }
 </style>
 </head>
@@ -411,7 +420,7 @@ function formatarData(iso){
 function contarSala(grade){let c=0;grade.forEach(r=>r.forEach(s=>{if(s)c++;}));return c;}
 
 function renderMapa(grade,salaIdx){
-  let html='<div class="sheet doc-page">'+cabecalho(salaIdx);
+  let html='<div class="sheet doc-page doc-mapa">'+cabecalho(salaIdx);
   // quadro/mesa ficam embaixo: desenha do fundo (topo) para a frente (baixo)
   html+='<div class="seta" style="text-align:center;margin-bottom:4px">▲ fundo da sala ▲</div>';
   html+='<div class="grade">';
@@ -435,7 +444,7 @@ function renderMapa(grade,salaIdx){
 function renderFreq(grade,salaIdx){
   // lista de alunos da sala, ordenada por nome
   const alunos=[].concat(...grade).filter(Boolean).slice().sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));
-  let html='<div class="sheet doc-page">'+cabecalho(salaIdx);
+  let html='<div class="sheet doc-page doc-freq">'+cabecalho(salaIdx);
   html+='<table class="freq"><thead><tr><th class="c">Nº</th><th>Nome do aluno</th><th>Turma</th><th>Presença</th><th>Assinatura</th></tr></thead><tbody>';
   alunos.forEach((a,i)=>{
     html+='<tr><td class="c">'+(i+1)+'</td><td>'+escapar(a.nome)+'</td><td>'+escapar(a.turma)+'</td><td class="pres">( ) P&nbsp;&nbsp;( ) F</td><td class="assin"></td></tr>';
