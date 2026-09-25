@@ -100,8 +100,18 @@
   table.freq th,table.freq td{border:1px solid #bbb;padding:4px 6px;text-align:left}
   table.freq th{background:var(--verde);color:#fff;font-size:11px}
   table.freq td.c{text-align:center;width:34px}
-  table.freq td.pres{width:74px}
-  table.freq td.assin{width:200px}
+  table.freq th.c{text-align:center}
+  table.freq td.pres{white-space:nowrap}
+  table.freq th.ban{text-align:center;padding:2px}
+  table.freq td.hr{text-align:center;color:#bbb;font-size:10px}
+  table.freq td.hr.ret{border-right:2px solid #888}
+  table.freq th.ret{border-right:2px solid #888}
+  .dias-prova{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:12px;margin:0 0 10px;
+    padding:6px 10px;border:1px solid #bbb;border-radius:6px}
+  .dias-prova b{margin-right:2px}
+  .dias-prova .dia{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+  .dias-prova .box{display:inline-block;width:13px;height:13px;border:1.5px solid #444;border-radius:2px}
+  .freq-nota{font-size:10.5px;color:#555;margin:0 0 8px}
   .vazio-txt{color:#bbb}
   /* tabela de provas (equipe de apoio) */
   table.provas{width:100%;border-collapse:collapse;font-size:13px}
@@ -126,7 +136,12 @@
     /* compacta a frequência p/ caber até 45 alunos numa folha */
     table.freq{font-size:10px}
     table.freq th{font-size:9.5px}
-    table.freq th,table.freq td{padding:1.5px 5px}
+    table.freq th,table.freq td{padding:1.8px 4px}
+    table.freq td.hr{font-size:8px}
+    .doc-freq .sheet-head{padding-bottom:6px;margin-bottom:8px}
+    .doc-freq .sheet-head img{width:44px;height:44px}
+    .dias-prova{font-size:11px;margin-bottom:4px;padding:3px 8px}
+    .freq-nota{font-size:9.5px;margin-bottom:4px}
     table.freq tr{page-break-inside:avoid}
     /* mapa em paisagem: cadeiras grandes, preenchendo a folha */
     .doc-mapa.sheet{max-width:100%}
@@ -155,7 +170,7 @@
   <!-- 1. Configuração -->
   <div class="card">
     <h2><span class="step">1</span>Configuração</h2>
-    <p class="hint">O logotipo da escola já vem fixo nos documentos. Informe a avaliação e a data.</p>
+    <p class="hint">O logotipo da escola já vem fixo nos documentos. Informe a avaliação e o período das provas.</p>
     <div class="logo-area">
       <div class="logo-box" id="logoBox"></div>
       <div>
@@ -169,23 +184,21 @@
         <label for="avalNome">Nome da avaliação</label>
         <input type="text" id="avalNome" placeholder="Ex.: 2ª Avaliação Bimestral">
       </div>
+    </div>
+    <div class="row" style="margin-top:14px">
       <div>
-        <label for="avalData">Data <span style="font-weight:400;color:var(--cinza)">(tabela de provas; padrão da frequência — não sai no mapa)</span></label>
+        <label for="avalData">Primeiro dia de prova</label>
         <input type="date" id="avalData">
       </div>
-    </div>
-    <div style="margin-top:14px;padding:12px 14px;border:1px solid var(--linha);border-radius:10px;background:#fafafa">
-      <label style="margin-bottom:8px">Lista de frequência — avaliação/data próprias <span style="font-weight:400;color:var(--cinza)">(opcional — em branco usa os dados acima; permite reaproveitar o mapa e atualizar só a lista)</span></label>
-      <div class="row">
-        <div>
-          <label for="freqNome" style="font-weight:500">Avaliação da frequência</label>
-          <input type="text" id="freqNome" placeholder="(mesma da avaliação acima)">
-        </div>
-        <div>
-          <label for="freqData" style="font-weight:500">Data da frequência</label>
-          <input type="date" id="freqData">
-        </div>
+      <div>
+        <label for="avalDataFim">Último dia de prova</label>
+        <input type="date" id="avalDataFim">
       </div>
+    </div>
+    <p class="hint" style="margin:6px 0 0">O mesmo mapa vale para todos os dias. Na lista de frequência aparecem todos os dias úteis do período, cada um com um quadradinho para o professor marcar o dia da prova.</p>
+    <div style="margin-top:14px;padding:12px 14px;border:1px solid var(--linha);border-radius:10px;background:#fafafa">
+      <label for="freqNome" style="margin-bottom:8px">Avaliação da frequência <span style="font-weight:400;color:var(--cinza)">(opcional — em branco usa o nome acima)</span></label>
+      <input type="text" id="freqNome" placeholder="(mesma da avaliação acima)">
     </div>
   </div>
 
@@ -244,7 +257,7 @@ const LOGO_FIXO="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAT8AAAFACAIAAABFs
 /* ============ Persistência ============ */
 const LS = {
   aval:'rs_aval', data:'rs_data', listas:'rs_listas', nomes:'rs_nomes',
-  freqNome:'rs_freqnome', freqData:'rs_freqdata', arranjo:'rs_arranjo'
+  freqNome:'rs_freqnome', dataFim:'rs_datafim', arranjo:'rs_arranjo'
 };
 function save(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
 function load(k){ try{return localStorage.getItem(k);}catch(e){return null;} }
@@ -408,6 +421,7 @@ listasEl.addEventListener('input',()=>{ save(LS.listas,listasEl.value); atualiza
 nSalasEl.addEventListener('input',()=>{ salasManual=true; renderNomesSalas(); verificarCapacidade(); });
 $('avalNome').addEventListener('input',e=>{ save(LS.aval,e.target.value); refrescarDocs(); });
 $('avalData').addEventListener('input',e=>{ save(LS.data,e.target.value); refrescarDocs(); });
+$('avalDataFim').addEventListener('input',e=>{ save(LS.dataFim,e.target.value); refrescarDocs(); });
 
 /* ============ Gerar ============ */
 function gerar(novaSemente){
@@ -435,24 +449,19 @@ $('btnRegerar').addEventListener('click',()=>gerar(true));
 
 /* ============ Render dos documentos ============ */
 function cabecalho(salaIdx,tipo){
-  let aval, dataIso;
-  if(tipo==='freq'){ // a frequência pode ter avaliação/data próprias
-    aval=($('freqNome').value.trim()||$('avalNome').value)||'Avaliação';
-    dataIso=$('freqData').value||$('avalData').value;
-  } else { // mapa: sem data (o mapa é reaproveitável)
-    aval=$('avalNome').value||'Avaliação';
-    dataIso='';
-  }
-  const data=formatarData(dataIso);
+  // sem data no cabeçalho: o mapa vale para todos os dias e a
+  // frequência traz os dias do período para marcar
+  const aval=(tipo==='freq'?($('freqNome').value.trim()||$('avalNome').value):$('avalNome').value)||'Avaliação';
   const tag=escapar(estado.nomesSalas[salaIdx]||('Sala '+(salaIdx+1)));
   return '<div class="sheet-head">'+
     '<img src="'+LOGO_FIXO+'">'+
-    '<div class="ti"><b>EEMTI Maria Luiza Saboia</b><small>'+escapar(aval)+(data?' · '+data:'')+'</small></div>'+
+    '<div class="ti"><b>EEMTI Maria Luiza Saboia</b><small>'+escapar(aval)+'</small></div>'+
     '<div class="sala-tag">'+tag+'</div></div>';
 }
 function cabecalhoGeral(titulo){
   const aval=$('avalNome').value||'Avaliação';
-  const data=formatarData($('avalData').value);
+  const dias=diasDeProva();
+  const data=dias.length>1?formatarData(dias[0])+' a '+formatarData(dias[dias.length-1]):formatarData($('avalData').value);
   return '<div class="sheet-head"><img src="'+LOGO_FIXO+'">'+
     '<div class="ti"><b>EEMTI Maria Luiza Saboia</b><small>'+escapar(aval)+(data?' · '+data:'')+'</small></div>'+
     '<div class="sala-tag" style="white-space:normal">'+escapar(titulo)+'</div></div>';
@@ -491,6 +500,29 @@ function formatarData(iso){
   if(!iso)return'';
   const [a,m,d]=iso.split('-'); return d+'/'+m+'/'+a;
 }
+// dias úteis (seg–sex) entre o primeiro e o último dia de prova
+const DIAS_SEM=['dom','seg','ter','qua','qui','sex','sáb'];
+function diasDeProva(){
+  const ini=$('avalData').value, fim=$('avalDataFim').value||ini;
+  if(!ini)return [];
+  const dias=[];
+  const d=new Date(ini+'T12:00:00'), f=new Date((fim<ini?ini:fim)+'T12:00:00');
+  for(;d<=f && dias.length<31;d.setDate(d.getDate()+1)){
+    const w=d.getDay(); if(w===0||w===6)continue;
+    dias.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));
+  }
+  if(!dias.length)dias.push(ini); // período só de fim de semana: mostra o 1º dia
+  return dias;
+}
+function blocoDias(){
+  const dias=diasDeProva();
+  const itens=dias.length?dias.map(iso=>{
+    const [a,m,d]=iso.split('-');
+    const w=DIAS_SEM[new Date(iso+'T12:00:00').getDay()];
+    return '<span class="dia"><span class="box"></span>'+d+'/'+m+' ('+w+')</span>';
+  }).join(''):'<span class="dia">____/____/______</span>';
+  return '<div class="dias-prova"><b>Dia da prova (marque):</b>'+itens+'</div>';
+}
 function contarSala(grade){let c=0;grade.forEach(r=>r.forEach(s=>{if(s)c++;}));return c;}
 
 function renderMapa(grade,salaIdx){
@@ -519,9 +551,16 @@ function renderFreq(grade,salaIdx){
   // lista de alunos da sala, ordenada por nome
   const alunos=[].concat(...grade).filter(Boolean).slice().sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));
   let html='<div class="sheet doc-page doc-freq">'+cabecalho(salaIdx,'freq');
-  html+='<table class="freq"><thead><tr><th class="c">Nº</th><th>Nome do aluno</th><th>Turma</th><th>Presença</th><th>Assinatura</th></tr></thead><tbody>';
+  html+=blocoDias();
+  html+='<p class="freq-nota">Banheiro: anote a hora de <b>saída</b> e de <b>retorno</b> do aluno (até 3 idas).</p>';
+  html+='<table class="freq"><colgroup><col style="width:4%"><col style="width:30%"><col style="width:7%"><col style="width:11%"><col style="width:18%">'+
+    '<col style="width:5%"><col style="width:5%"><col style="width:5%"><col style="width:5%"><col style="width:5%"><col style="width:5%"></colgroup>';
+  html+='<thead><tr><th class="c" rowspan="2">Nº</th><th rowspan="2">Nome do aluno</th><th rowspan="2">Turma</th><th rowspan="2">Presença</th><th rowspan="2">Assinatura</th>'+
+    '<th class="ban ret" colspan="2">1ª ida</th><th class="ban ret" colspan="2">2ª ida</th><th class="ban ret" colspan="2">3ª ida</th></tr>'+
+    '<tr>'+'<th class="ban">Saída</th><th class="ban ret">Volta</th>'.repeat(3)+'</tr></thead><tbody>';
+  const hr='<td class="hr">:</td><td class="hr ret">:</td>';
   alunos.forEach((a,i)=>{
-    html+='<tr><td class="c">'+(i+1)+'</td><td>'+escapar(a.nome)+'</td><td>'+escapar(a.turma)+'</td><td class="pres">( ) P&nbsp;&nbsp;( ) F</td><td class="assin"></td></tr>';
+    html+='<tr><td class="c">'+(i+1)+'</td><td>'+escapar(a.nome)+'</td><td>'+escapar(a.turma)+'</td><td class="pres">( ) P&nbsp;( ) F</td><td class="assin"></td>'+hr.repeat(3)+'</tr>';
   });
   html+='</tbody></table>';
   html+='<p style="font-size:11px;color:#666;margin-top:10px">Total de alunos na sala: '+alunos.length+'</p>';
@@ -572,7 +611,6 @@ $('btnPrintProvas').addEventListener('click',()=>imprimir('provas'));
 /* re-render dos documentos quando os campos de cabeçalho mudam (sem re-sortear) */
 function refrescarDocs(){ if(estado.salas && estado.salas.length){ renderResultado(); } }
 $('freqNome').addEventListener('input',e=>{ save(LS.freqNome,e.target.value); refrescarDocs(); });
-$('freqData').addEventListener('input',e=>{ save(LS.freqData,e.target.value); refrescarDocs(); });
 
 /* ============ Inicialização ============ */
 (function init(){
@@ -581,7 +619,7 @@ $('freqData').addEventListener('input',e=>{ save(LS.freqData,e.target.value); re
   const dataSalva=load(LS.data);
   $('avalData').value=dataSalva||new Date().toISOString().slice(0,10);
   const fn=load(LS.freqNome); if(fn)$('freqNome').value=fn;
-  const fd=load(LS.freqData); if(fd)$('freqData').value=fd;
+  const df=load(LS.dataFim); if(df)$('avalDataFim').value=df;
   const listas=load(LS.listas); if(listas)listasEl.value=listas;
   atualizarPreview();
   // restaura o último arranjo gerado (mapa reaproveitável)

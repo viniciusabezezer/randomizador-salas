@@ -12,7 +12,7 @@ Funciona 100% OFFLINE - sem internet, sem instalar nada, sem conta.
 COMO USAR (rápido)
 ------------------
 1. Dê DUPLO CLIQUE em "Randomizador de Salas.html" (abre no navegador).
-2. Digite o nome da avaliação e confira a data.
+2. Digite o nome da avaliação e o primeiro e o último dia de prova.
 3. Cole as turmas no campo grande:
    - Nome da turma numa linha, depois a lista de alunos (numerada ou não).
    - Separe uma turma da outra com UMA LINHA EM BRANCO.
