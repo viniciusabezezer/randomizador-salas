@@ -105,6 +105,7 @@
   table.freq td.hr{text-align:center;color:#bbb;font-size:10px}
   table.freq td.hr.ret{border-right:2px solid #888}
   table.freq th.ret{border-right:2px solid #888}
+  table.freq .ic-wc{width:15px;height:15px;fill:currentColor;vertical-align:-3px;margin-right:4px}
   .dias-prova{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:12px;margin:0 0 10px;
     padding:6px 10px;border:1px solid #bbb;border-radius:6px}
   .dias-prova b{margin-right:2px}
@@ -545,6 +546,9 @@ function renderMapa(grade,salaIdx){
   html+='</div>';
   return html;
 }
+// ícone de vaso sanitário (SVG embutido: imprime igual em qualquer computador)
+const ICONE_WC='<svg class="ic-wc" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2" width="7" height="8" rx="1.2"/>'+
+  '<path d="M3 11h18v1.5c0 3.6-2.7 6.2-6.2 6.7L16 22H8l1-3.2C5.6 18 3 15.6 3 12.5z"/></svg>';
 function renderFreq(grade,salaIdx){
   // lista de alunos da sala, ordenada por nome
   const alunos=[].concat(...grade).filter(Boolean).slice().sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));
@@ -554,7 +558,7 @@ function renderFreq(grade,salaIdx){
   html+='<table class="freq"><colgroup><col style="width:4%"><col style="width:34%"><col style="width:7%"><col style="width:31%">'+
     '<col style="width:6%"><col style="width:6%"><col style="width:6%"><col style="width:6%"></colgroup>';
   html+='<thead><tr><th class="c" rowspan="2">Nº</th><th rowspan="2">Nome do aluno</th><th rowspan="2">Turma</th><th rowspan="2">Assinatura</th>'+
-    '<th class="ban ret" colspan="2">1ª ida</th><th class="ban ret" colspan="2">2ª ida</th></tr>'+
+    '<th class="ban ret" colspan="2">'+ICONE_WC+'1ª ida</th><th class="ban ret" colspan="2">'+ICONE_WC+'2ª ida</th></tr>'+
     '<tr>'+'<th class="ban">Saída</th><th class="ban ret">Volta</th>'.repeat(2)+'</tr></thead><tbody>';
   const hr='<td class="hr">:</td><td class="hr ret">:</td>';
   alunos.forEach((a,i)=>{
