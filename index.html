@@ -101,7 +101,6 @@
   table.freq th{background:var(--verde);color:#fff;font-size:11px}
   table.freq td.c{text-align:center;width:34px}
   table.freq th.c{text-align:center}
-  table.freq td.pres{white-space:nowrap}
   table.freq th.ban{text-align:center;padding:2px}
   table.freq td.hr{text-align:center;color:#bbb;font-size:10px}
   table.freq td.hr.ret{border-right:2px solid #888}
@@ -552,15 +551,15 @@ function renderFreq(grade,salaIdx){
   const alunos=[].concat(...grade).filter(Boolean).slice().sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));
   let html='<div class="sheet doc-page doc-freq">'+cabecalho(salaIdx,'freq');
   html+=blocoDias();
-  html+='<p class="freq-nota">Banheiro: anote a hora de <b>saída</b> e de <b>retorno</b> do aluno (até 3 idas).</p>';
-  html+='<table class="freq"><colgroup><col style="width:4%"><col style="width:30%"><col style="width:7%"><col style="width:11%"><col style="width:18%">'+
-    '<col style="width:5%"><col style="width:5%"><col style="width:5%"><col style="width:5%"><col style="width:5%"><col style="width:5%"></colgroup>';
-  html+='<thead><tr><th class="c" rowspan="2">Nº</th><th rowspan="2">Nome do aluno</th><th rowspan="2">Turma</th><th rowspan="2">Presença</th><th rowspan="2">Assinatura</th>'+
-    '<th class="ban ret" colspan="2">1ª ida</th><th class="ban ret" colspan="2">2ª ida</th><th class="ban ret" colspan="2">3ª ida</th></tr>'+
-    '<tr>'+'<th class="ban">Saída</th><th class="ban ret">Volta</th>'.repeat(3)+'</tr></thead><tbody>';
+  html+='<p class="freq-nota">Banheiro: anote a hora de <b>saída</b> e de <b>retorno</b> do aluno (até 2 idas; se houver outra, anote à parte). Presença = assinatura; sem assinatura = falta.</p>';
+  html+='<table class="freq"><colgroup><col style="width:4%"><col style="width:34%"><col style="width:7%"><col style="width:31%">'+
+    '<col style="width:6%"><col style="width:6%"><col style="width:6%"><col style="width:6%"></colgroup>';
+  html+='<thead><tr><th class="c" rowspan="2">Nº</th><th rowspan="2">Nome do aluno</th><th rowspan="2">Turma</th><th rowspan="2">Assinatura</th>'+
+    '<th class="ban ret" colspan="2">1ª ida</th><th class="ban ret" colspan="2">2ª ida</th></tr>'+
+    '<tr>'+'<th class="ban">Saída</th><th class="ban ret">Volta</th>'.repeat(2)+'</tr></thead><tbody>';
   const hr='<td class="hr">:</td><td class="hr ret">:</td>';
   alunos.forEach((a,i)=>{
-    html+='<tr><td class="c">'+(i+1)+'</td><td>'+escapar(a.nome)+'</td><td>'+escapar(a.turma)+'</td><td class="pres">( ) P&nbsp;( ) F</td><td class="assin"></td>'+hr.repeat(3)+'</tr>';
+    html+='<tr><td class="c">'+(i+1)+'</td><td>'+escapar(a.nome)+'</td><td>'+escapar(a.turma)+'</td><td class="assin"></td>'+hr.repeat(2)+'</tr>';
   });
   html+='</tbody></table>';
   html+='<p style="font-size:11px;color:#666;margin-top:10px">Total de alunos na sala: '+alunos.length+'</p>';
