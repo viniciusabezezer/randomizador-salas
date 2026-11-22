@@ -154,6 +154,15 @@
     .doc-mapa .frente{margin-top:14px}
     .doc-mapa .legenda{font-size:13px;margin-top:10px}
   }
+
+  .aviso-forte{background:#fff4e5;border:1px solid #e8b15a;color:#7a3e00;border-radius:9px;padding:10px 12px;font-size:13px;margin:0 0 12px}
+  .ok{background:#e8f6ec;border:1px solid #b7e0c2;color:#14602a;border-radius:9px;padding:10px 12px;font-size:13px;margin-top:12px}
+  .mapa-painel{margin:4px 0 18px;padding:14px;border:1px solid var(--linha);border-radius:12px;background:#fbfdfb}
+  .mapa-painel h3{margin:0 0 8px;font-size:15px;color:var(--verde-esc)}
+  .mapa-form{margin-top:12px;padding:12px;border:1px solid var(--linha);border-radius:10px;background:#fff}
+  .mapa-trecho{background:#102117;color:#e7f6ea;border-radius:10px;padding:12px 14px;font-size:12px;line-height:1.45;overflow:auto;max-height:240px;white-space:pre-wrap;margin:10px 0 0}
+  .arquivo-btn input{display:none}
+  [hidden]{display:none !important}
 </style>
 </head>
 <body>
@@ -204,7 +213,8 @@
   <!-- 2. Alunos -->
   <div class="card">
     <h2><span class="step">2</span>Alunos por turma</h2>
-    <p class="hint">Cole as turmas participantes. Cada turma começa com o nome da turma numa linha, seguido da lista de alunos — <b>numerada ou não</b>. Separe uma turma da outra com <b>uma linha em branco</b>.</p>
+    <p class="hint">Cole as turmas participantes. Cada turma começa com o nome da turma numa linha, seguido da lista de alunos. Separe uma turma da outra com <b>uma linha em branco</b>.</p>
+    <p class="hint">O <b>número da lista</b> precisa ser o mesmo do Identificador de Provas. Se a linha vier numerada (<b>7 - Ana Lima</b> ou <b>8. Bruno</b>), o mapa usa esse número. Se a turma inteira vier sem número, o primeiro nome fica 1, o segundo fica 2, e assim por diante. Não misture os dois jeitos na mesma turma: um nome sem número logo depois de nomes numerados é lido como <b>outra turma</b>. Número de matrícula (4 dígitos ou mais) não entra na conta.</p>
     <div class="grid2">
       <div>
         <label for="listas">Colar listas</label>
@@ -234,6 +244,40 @@
   <div class="card" id="resultado">
     <h2>Salas geradas</h2>
     <p class="hint">Clique numa sala para ver seus documentos. Use os botões para imprimir (ou salvar em PDF).</p>
+    <div class="mapa-painel" id="mapaPainel">
+      <h3>Mapa para o Identificador de Provas</h3>
+      <p class="aviso aviso-forte"><b>Gerar novamente muda a distribuição.</b> Se as provas já foram impressas com o mapa anterior, os pacotes não batem mais com as salas. Recarregar a página <b>não apaga</b> o último sorteio: ele fica guardado neste navegador. Para repetir o mesmo mapa, use os botões abaixo e não sorteie de novo.</p>
+      <div class="doc-actions">
+        <button type="button" class="btn" id="btnBaixarMapa">Baixar mapa para o Identificador de Provas</button>
+        <button type="button" class="btn secund" id="btnSalvarOficial">Salvar como mapa oficial no painel</button>
+        <label class="btn ghost arquivo-btn">Abrir um mapa salvo
+          <input type="file" id="arquivoMapa" accept="application/json,.json">
+        </label>
+        <button type="button" class="btn ghost" id="btnUsarTela" hidden>Usar o sorteio que está na tela</button>
+      </div>
+      <p class="hint" id="mapaOrigem"></p>
+      <p class="aviso" id="avisoNomes">O mapa tem o <b>nome dos alunos</b>. O arquivo baixado fica no seu computador. Se você salvar no painel, os nomes vão só para o <b>banco da escola</b> (o mesmo do Montador de Provas) e só a gestão consegue gravar. Não vai para outro serviço.</p>
+      <form id="formPainel" class="mapa-form" hidden>
+        <p class="hint">Entre com o e-mail e a senha do Montador de Provas. É a mesma conta do Identificador. Só quem é da gestão consegue salvar. Esta etapa precisa de internet; sortear, imprimir e baixar o arquivo continuam sem rede.</p>
+        <div class="row">
+          <div>
+            <label for="painelEmail">E-mail</label>
+            <input type="email" id="painelEmail" autocomplete="username" required>
+          </div>
+          <div>
+            <label for="painelSenha">Senha</label>
+            <input type="password" id="painelSenha" autocomplete="current-password" required>
+          </div>
+        </div>
+        <p id="painelMsg" role="status" hidden></p>
+        <div style="margin-top:12px">
+          <button class="btn" type="submit" id="btnEntrarSalvar">Entrar e salvar</button>
+          <button class="btn ghost" type="button" id="btnCancelarPainel">Cancelar</button>
+        </div>
+      </form>
+      <p class="hint" style="margin-top:12px">Trecho para conferir o número da lista. O arquivo completo leva todos os alunos, na mesma ordem da lista de frequência.</p>
+      <pre id="mapaTrecho" class="mapa-trecho">Gere as salas para ver o mapa aqui.</pre>
+    </div>
     <div style="margin-bottom:14px">
       <button class="btn secund" id="btnRegerar">↻ Gerar novamente</button>
       <button class="btn ghost" id="btnPrintMapas">🖨 Imprimir todos os mapas</button>
@@ -249,6 +293,7 @@
 
 <div id="print-area"></div>
 
+<script src="mapa-salas.js"></script>
 <script>
 "use strict";
 /* ============ Logotipo fixo da escola (embutido) ============ */
@@ -256,41 +301,14 @@ const LOGO_FIXO="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAT8AAAFACAIAAABFs
 /* ============ Persistência ============ */
 const LS = {
   aval:'rs_aval', data:'rs_data', listas:'rs_listas', nomes:'rs_nomes',
-  freqNome:'rs_freqnome', dataFim:'rs_datafim', arranjo:'rs_arranjo'
+  freqNome:'rs_freqnome', dataFim:'rs_datafim', arranjo:'rs_arranjo',
+  mapaArquivo:'rs_mapa_arquivo'
 };
 function save(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
 function load(k){ try{return localStorage.getItem(k);}catch(e){return null;} }
 
-/* ============ Parser ============ */
-// Linha de aluno numerado: "N - Nome", "N. Nome", "N) Nome" ou "N Nome".
-const ALUNO_RE = /^\s*\d+\s*[-.)]\s*(.+?)\s*$/;
-const ALUNO_RE_BARE = /^\s*\d+\s+(\D.*?)\s*$/; // número + espaço + algo que não começa com dígito
-// Aceita listas numeradas OU não:
-//  - linha numerada  -> sempre um aluno
-//  - linha em branco  -> separa turmas (a próxima linha de texto é um cabeçalho)
-//  - linha de texto   -> cabeçalho de turma se: é a 1ª, ou veio após linha em branco,
-//                        ou o bloco atual estava numerado; senão, é um aluno sem número.
-function parseListas(texto){
-  const linhas = texto.split(/\r?\n/);
-  const turmas = [];
-  let atual = null, esperaCabecalho = false, ultimoNumerado = false;
-  for(const raw of linhas){
-    const linha = raw.trim();
-    if(linha===''){ esperaCabecalho = true; continue; }
-    const m = linha.match(ALUNO_RE) || linha.match(ALUNO_RE_BARE);
-    if(m){
-      if(!atual){ atual={nome:'Sem turma',alunos:[]}; turmas.push(atual); }
-      atual.alunos.push(m[1].trim());
-      ultimoNumerado = true; esperaCabecalho = false;
-    } else {
-      const ehCabecalho = !atual || esperaCabecalho || (atual.alunos.length>0 && ultimoNumerado);
-      if(ehCabecalho){ atual={nome:linha,alunos:[]}; turmas.push(atual); }
-      else { atual.alunos.push(linha); }
-      ultimoNumerado = false; esperaCabecalho = false;
-    }
-  }
-  return turmas.filter(t=>t.alunos.length>0);
-}
+/* ============ Parser (em mapa-salas.js) ============ */
+const parseListas = MapaSalas.parseListas;
 
 /* ============ Aleatoriedade (com semente p/ "gerar novamente") ============ */
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
@@ -302,7 +320,7 @@ function distribuir(turmas,nSalas,rng){
   let offset=0;
   // turmas em ordem aleatória para não privilegiar sempre a mesma
   for(const t of shuffle(turmas,rng)){
-    const emb=shuffle(t.alunos.map(nome=>({nome,turma:t.nome})),rng);
+    const emb=shuffle(t.alunos.map(a=>MapaSalas.alunoParaSala(t.nome,a)),rng);
     emb.forEach((al,i)=>{ salas[(i+offset)%nSalas].push(al); });
     offset=(offset+emb.length)%nSalas;
   }
@@ -341,7 +359,7 @@ function arranjar(alunos){
 }
 
 /* ============ Estado ============ */
-let estado={turmas:[],salas:[],nSalas:1,coresTurma:{},nomesSalas:[]};
+let estado={turmas:[],salas:[],nSalas:1,coresTurma:{},nomesSalas:[],geradoEm:null,mapaArquivo:null};
 const PALETA=['#e3f2fd','#fce4ec','#e8f5e9','#fff3e0','#f3e5f5','#e0f7fa','#fff9c4','#efebe9'];
 function corDaTurma(nome){
   if(!(nome in estado.coresTurma)){
@@ -371,9 +389,11 @@ function atualizarPreview(){
   if(turmas.length===0){
     previewBody.innerHTML='<p style="color:#aaa;font-size:13px;margin:0">Cole as listas para ver as turmas detectadas.</p>';
   } else {
-    previewBody.innerHTML=turmas.map(t=>
-      '<div class="turma-line"><span>'+escapar(t.nome)+'</span><span>'+t.alunos.length+(t.alunos.length===1?' aluno':' alunos')+'</span></div>'
-    ).join('')+'<div class="total"><span>Total</span><span>'+turmas.length+(turmas.length===1?' turma · ':' turmas · ')+total+' alunos</span></div>';
+    previewBody.innerHTML=turmas.map(t=>{
+      const daLista=t.alunos.filter(a=>a.numeroVeioDaLista).length;
+      const extra=daLista===t.alunos.length?' · nº da lista':(daLista===0?' · sem nº na cola: 1, 2, 3…':' · confira os números');
+      return '<div class="turma-line"><span>'+escapar(t.nome)+'</span><span>'+t.alunos.length+(t.alunos.length===1?' aluno':' alunos')+extra+'</span></div>';
+    }).join('')+'<div class="total"><span>Total</span><span>'+turmas.length+(turmas.length===1?' turma · ':' turmas · ')+total+' alunos</span></div>';
   }
   // sugestão de salas
   const sug=Math.min(8,Math.max(1,Math.ceil(total/45)||1));
@@ -426,6 +446,10 @@ $('avalDataFim').addEventListener('input',e=>{ save(LS.dataFim,e.target.value); 
 function gerar(novaSemente){
   if(estado.turmas.length===0){ alert('Cole pelo menos uma turma com alunos.'); return; }
   if(!verificarCapacidade()){ return; }
+  if(estado.salas && estado.salas.length){
+    const segue=confirm('Gerar novamente muda quem fica em cada sala.\n\nSe as provas já foram impressas com o mapa anterior, os pacotes não vão bater com as salas.\n\nO último sorteio continua neste navegador até você confirmar.\n\nQuer sortear de novo mesmo assim?');
+    if(!segue) return;
+  }
   const n=Math.min(8,Math.max(1,parseInt(nSalasEl.value)||1));
   estado.nSalas=n;
   estado.nomesSalas=nomesDasSalas(n);
@@ -434,6 +458,9 @@ function gerar(novaSemente){
   estado.coresTurma={};
   estado.turmas.forEach(t=>corDaTurma(t.nome)); // fixa cores na ordem das turmas
   estado.salas=distribuir(estado.turmas,n,rng).map(arranjar);
+  estado.geradoEm=new Date().toISOString();
+  estado.mapaArquivo=null;
+  drop(LS.mapaArquivo);
   salvarArranjo();
   renderResultado();
   resultado.style.display='block';
@@ -441,7 +468,7 @@ function gerar(novaSemente){
 }
 // guarda o arranjo gerado para reaproveitar o mapa em outra sessão/dia
 function salvarArranjo(){
-  save(LS.arranjo,JSON.stringify({salas:estado.salas,nomesSalas:estado.nomesSalas,coresTurma:estado.coresTurma,nSalas:estado.nSalas}));
+  save(LS.arranjo,JSON.stringify({salas:estado.salas,nomesSalas:estado.nomesSalas,coresTurma:estado.coresTurma,nSalas:estado.nSalas,geradoEm:estado.geradoEm}));
 }
 $('btnGerar').addEventListener('click',()=>gerar(true));
 $('btnRegerar').addEventListener('click',()=>gerar(true));
@@ -551,7 +578,8 @@ const ICONE_WC='<svg class="ic-wc" viewBox="0 0 24 24" aria-hidden="true"><rect 
   '<path d="M3 11h18v1.5c0 3.6-2.7 6.2-6.2 6.7L16 22H8l1-3.2C5.6 18 3 15.6 3 12.5z"/></svg>';
 function renderFreq(grade,salaIdx){
   // lista de alunos da sala, ordenada por nome
-  const alunos=[].concat(...grade).filter(Boolean).slice().sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));
+  // Nº impresso = posicao do mapa do Identificador (mesma ordem alfabética)
+  const alunos=MapaSalas.alunosNaOrdemDaFrequencia(grade);
   let html='<div class="sheet doc-page doc-freq">'+cabecalho(salaIdx,'freq');
   html+=blocoDias();
   html+='<p class="freq-nota">Banheiro: anote a hora de <b>saída</b> e de <b>retorno</b> do aluno (até 2 idas; se houver outra, anote à parte). Presença = assinatura; sem assinatura = falta.</p>';
@@ -562,7 +590,7 @@ function renderFreq(grade,salaIdx){
     '<tr>'+'<th class="ban">Saída</th><th class="ban ret">Volta</th>'.repeat(2)+'</tr></thead><tbody>';
   const hr='<td class="hr">:</td><td class="hr ret">:</td>';
   alunos.forEach((a,i)=>{
-    html+='<tr><td class="c">'+(i+1)+'</td><td>'+escapar(a.nome)+'</td><td>'+escapar(a.turma)+'</td><td class="assin"></td>'+hr.repeat(2)+'</tr>';
+    html+='<tr><td class="c">'+a.posicao+'</td><td>'+escapar(a.nome)+'</td><td>'+escapar(a.turma)+'</td><td class="assin"></td>'+hr.repeat(2)+'</tr>';
   });
   html+='</tbody></table>';
   html+='<p style="font-size:11px;color:#666;margin-top:10px">Total de alunos na sala: '+alunos.length+'</p>';
@@ -587,6 +615,7 @@ function renderResultado(){
     '<button class="btn secund" onclick="imprimir(\'mapa\','+abaAtiva+')">🖨 Imprimir mapa</button>'+
     '<button class="btn secund" onclick="imprimir(\'freq\','+abaAtiva+')">🖨 Imprimir frequência</button>';
   $('docView').innerHTML=renderMapa(g,abaAtiva)+renderFreq(g,abaAtiva);
+  mostrarTrecho(mapaAtual());
 }
 
 /* ============ Impressão ============ */
@@ -614,6 +643,131 @@ $('btnPrintProvas').addEventListener('click',()=>imprimir('provas'));
 function refrescarDocs(){ if(estado.salas && estado.salas.length){ renderResultado(); } }
 $('freqNome').addEventListener('input',e=>{ save(LS.freqNome,e.target.value); refrescarDocs(); });
 
+
+/* ============ Mapa para o Identificador ============ */
+function drop(k){ try{localStorage.removeItem(k);}catch(e){} }
+function mapaAtual(){
+  if(estado.mapaArquivo) return estado.mapaArquivo;
+  if(!estado.salas || !estado.salas.length) return null;
+  const inicio=$('avalData').value;
+  const fim=$('avalDataFim').value||inicio;
+  if(!estado.geradoEm) estado.geradoEm=new Date().toISOString();
+  return MapaSalas.montarMapa({
+    avaliacao: ($('avalNome').value||'').trim()||'Avaliação',
+    inicio: inicio,
+    fim: fim,
+    geradoEm: estado.geradoEm,
+    nomesSalas: estado.nomesSalas,
+    salas: MapaSalas.completarNumeros(estado.salas, estado.turmas)
+  });
+}
+function textoOrigem(){
+  if(estado.mapaArquivo) return 'O download e o envio ao painel usam o arquivo que você abriu, sem sortear de novo. Os mapas desenhados na tela continuam os do último sorteio deste navegador.';
+  if(estado.salas && estado.salas.length) return 'O download e o envio ao painel usam o último sorteio guardado neste navegador. Baixar de novo não muda as salas.';
+  return 'Ainda não há sorteio neste navegador.';
+}
+function mostrarTrecho(mapa){
+  const el=$('mapaTrecho');
+  const origem=$('mapaOrigem');
+  if(origem) origem.textContent=textoOrigem();
+  const usar=$('btnUsarTela');
+  if(usar) usar.hidden=!estado.mapaArquivo;
+  if(!mapa){ if(el) el.textContent='Gere as salas para ver o mapa aqui.'; return; }
+  const amostra=JSON.parse(JSON.stringify(mapa));
+  if(amostra.salas && amostra.salas[0] && amostra.salas[0].alunos.length>4){
+    const resto=amostra.salas[0].alunos.length-4;
+    amostra.salas[0].alunos=amostra.salas[0].alunos.slice(0,4);
+    amostra.salas[0].alunos.push('… e mais '+resto+' aluno(s) nesta sala, no arquivo completo');
+  }
+  if(amostra.salas && amostra.salas.length>1){
+    const n=amostra.salas.length-1;
+    amostra.salas=[amostra.salas[0], '… e mais '+n+' sala(s) no arquivo completo'];
+  }
+  el.textContent=JSON.stringify(amostra, null, 2);
+}
+function baixarMapa(){
+  const mapa=mapaAtual();
+  if(!mapa){ alert('Gere as salas antes de baixar o mapa.'); return; }
+  const checagem=MapaSalas.validarMapa(mapa);
+  if(!checagem.ok){ alert(checagem.erros.join('\n')); return; }
+  if(!estado.mapaArquivo) salvarArranjo();
+  const blob=new Blob([JSON.stringify(mapa, null, 2)], {type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=MapaSalas.nomeArquivo(mapa.avaliacao, (mapa.periodo&&mapa.periodo.inicio)||'');
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1500);
+}
+function avisoPainel(texto, ok){
+  const el=$('painelMsg');
+  el.hidden=!texto;
+  el.className=ok?'ok':'aviso';
+  el.textContent=texto||'';
+}
+function abrirFormPainel(){
+  $('formPainel').hidden=false;
+  avisoPainel('', false);
+  $('painelEmail').focus();
+}
+async function enviarMapaOficial(ev){
+  ev.preventDefault();
+  const mapa=mapaAtual();
+  if(!mapa){ avisoPainel('Gere as salas antes de salvar.', false); return; }
+  const checagem=MapaSalas.validarMapa(mapa);
+  if(!checagem.ok){ avisoPainel(checagem.erros[0], false); return; }
+  const botao=$('btnEntrarSalvar');
+  botao.disabled=true;
+  botao.textContent='Salvando…';
+  try{
+    const r=await MapaSalas.salvarMapaOficial({
+      email: $('painelEmail').value,
+      senha: $('painelSenha').value,
+      mapa: mapa
+    });
+    avisoPainel(r.mensagem, r.ok);
+  } finally {
+    $('painelSenha').value='';
+    botao.disabled=false;
+    botao.textContent='Entrar e salvar';
+  }
+}
+function abrirMapaArquivo(file){
+  const leitor=new FileReader();
+  leitor.onload=function(){
+    let obj;
+    try{ obj=JSON.parse(String(leitor.result||'')); }
+    catch(e){ alert('Não consegui ler esse arquivo. Escolha o mapa baixado por este aplicativo.'); return; }
+    const checagem=MapaSalas.validarMapa(obj);
+    if(!checagem.ok){ alert(checagem.erros.join('\n')); return; }
+    estado.mapaArquivo=obj;
+    save(LS.mapaArquivo, JSON.stringify(obj));
+    resultado.style.display='block';
+    if(!estado.salas || !estado.salas.length){
+      $('provasWrap').innerHTML='';
+      $('tabs').innerHTML='';
+      $('docActions').innerHTML='';
+      $('docView').innerHTML='<p class="hint">Não há sorteio desenhado na tela. O arquivo aberto pode ser baixado de novo ou salvo no painel, sem sortear.</p>';
+    }
+    mostrarTrecho(obj);
+  };
+  leitor.readAsText(file);
+}
+function usarSorteioDaTela(){
+  estado.mapaArquivo=null;
+  drop(LS.mapaArquivo);
+  mostrarTrecho(mapaAtual());
+}
+$('btnBaixarMapa').addEventListener('click', baixarMapa);
+$('btnSalvarOficial').addEventListener('click', abrirFormPainel);
+$('btnCancelarPainel').addEventListener('click', function(){ $('formPainel').hidden=true; $('painelSenha').value=''; avisoPainel('', false); });
+$('formPainel').addEventListener('submit', enviarMapaOficial);
+$('arquivoMapa').addEventListener('change', function(){
+  const f=this.files && this.files[0];
+  this.value='';
+  if(f) abrirMapaArquivo(f);
+});
+$('btnUsarTela').addEventListener('click', usarSorteioDaTela);
+
 /* ============ Inicialização ============ */
 (function init(){
   aplicarLogo();
@@ -632,8 +786,23 @@ $('freqNome').addEventListener('input',e=>{ save(LS.freqNome,e.target.value); re
       if(d && d.salas && d.salas.length){
         estado.salas=d.salas; estado.nomesSalas=d.nomesSalas||[];
         estado.coresTurma=d.coresTurma||{}; estado.nSalas=d.nSalas||d.salas.length;
+        estado.geradoEm=d.geradoEm||null;
         renderResultado();
         resultado.style.display='block';
+      }
+    }
+  }catch(e){}
+  try{
+    const arq=load(LS.mapaArquivo);
+    if(arq){
+      const obj=JSON.parse(arq);
+      if(MapaSalas.validarMapa(obj).ok){
+        estado.mapaArquivo=obj;
+        resultado.style.display='block';
+        if(!estado.salas || !estado.salas.length){
+          $('docView').innerHTML='<p class="hint">Não há sorteio desenhado na tela. O arquivo aberto pode ser baixado de novo ou salvo no painel, sem sortear.</p>';
+        }
+        mostrarTrecho(obj);
       }
     }
   }catch(e){}
