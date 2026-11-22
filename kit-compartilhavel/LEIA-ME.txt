@@ -7,7 +7,8 @@ O QUE É
 Aplicativo que distribui alunos de várias turmas em salas de avaliação,
 deixando colegas da mesma turma o mais longe possível. Gera, por sala:
 mapa ilustrado, lista de frequência e tabela de provas (equipe de apoio).
-Funciona 100% OFFLINE - sem internet, sem instalar nada, sem conta.
+Sortear e imprimir funciona OFFLINE - sem internet e sem instalar nada.
+Salvar o mapa no painel (passo opcional) pede a conta da gestão e internet.
 
 COMO USAR (rápido)
 ------------------
@@ -19,6 +20,13 @@ COMO USAR (rápido)
 4. Escolha o número de salas (1 a 8) e, se quiser, nomeie cada sala.
 5. Clique em "Gerar salas".
 6. Clique em cada sala e use os botões de impressão (ou "Salvar como PDF").
+7. Para o Identificador de Provas imprimir já na ordem da sala:
+   - "Baixar mapa para o Identificador de Provas" salva um arquivo neste computador.
+   - "Salvar como mapa oficial no painel" manda o mapa para o banco da escola.
+     Use o mesmo e-mail e senha do Montador de Provas. Só a gestão consegue.
+     O arquivo leva o nome dos alunos e fica só nesse banco.
+   Não clique em "Gerar novamente" depois de imprimir: o sorteio muda e os
+   pacotes deixam de bater. O último sorteio fica guardado neste navegador.
 
 DICAS
 -----
